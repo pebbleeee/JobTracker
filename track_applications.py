@@ -8,6 +8,8 @@ Put credentials.json (OAuth client) in same folder. token.json will be created o
 """
 
 from __future__ import print_function
+import pandas as pd
+from datetime import datetime
 import os
 import base64
 import csv
@@ -228,6 +230,38 @@ def main():
     if rows:
         write_csv(args.out, rows, append=args.append)
         print(f"Wrote {len(rows)} rows to {args.out}.")
+        # ----------------------
+        # Auto-filter and save Excel
+        # ----------------------
+        df = pd.DataFrame(rows)
+
+        # Convert date column to datetime
+        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+
+        # Filter by start date (after May 1, 2025)
+        start_date = datetime(2025, 5, 1)
+        df = df[df['date'] >= start_date]
+
+        # Optional: further filter by keywords (extra safety)
+        keywords = [
+            'you have applied',
+            'application received',
+            'thank you for applying',
+            'we have received your application',
+            'your application has been submitted',
+            'application confirmation',
+            'application acknowledgement',
+            'application successfully submitted',
+            'thanks for applying'
+        ]
+        pattern = '|'.join(keywords)
+        df_filtered = df[df['subject'].str.contains(pattern, case=False, na=False) |
+                        df['preview'].str.contains(pattern, case=False, na=False)]
+
+        # Save filtered Excel
+        excel_path = args.out.replace(".csv", "_filtered.xlsx")
+        df_filtered.to_excel(excel_path, index=False)
+        print(f"Saved {len(df_filtered)} filtered application emails to {excel_path}")
     else:
         print("No new rows to write.")
 
