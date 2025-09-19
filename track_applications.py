@@ -246,19 +246,37 @@ def main():
 
         # Keyword filter
         keywords = [
-            'you have applied',
-            'application received',
-            'thank you for applying',
-            'we have received your application',
-            'your application has been submitted',
-            'application confirmation',
-            'application acknowledgement',
-            'application successfully submitted',
-            'thanks for applying'
+            "you have applied",
+            "your application has been received",
+            "application received",
+            "application acknowledged",
+            "application confirmation",
+            "application successfully submitted",
+            "application submitted",
+            "application under review",
+            "application status update",
+            "application update",
+            "application completed",
+            "submission received",
+            "your submission is being reviewed",
+            "thanks for applying",
+            "thank you for applying",
+            "we have received your application",
+            "we confirm your application",
+            "your application is complete",
+            "application submission confirmed",
+            "application submission acknowledged",
+            "application processed",
+            "your submission has been processed",
+            "your application has been logged",
+            "application recorded",
+            "we received your application",
+            "your application has been entered"
         ]
         pattern = '|'.join(keywords)
         df_filtered = df[df['subject'].str.contains(pattern, case=False, na=False) |
                         df['preview'].str.contains(pattern, case=False, na=False)]
+
 
         # Make datetimes timezone-naive for Excel
         df_filtered = df_filtered.copy()
