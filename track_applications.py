@@ -228,21 +228,23 @@ def main():
             print(f"Error parsing message {mid}: {e}")
 
     if rows:
-        write_csv(args.out, rows, append=args.append)
+        # Overwrite CSV each time
+        write_csv(args.out, rows, append=False)
         print(f"Wrote {len(rows)} rows to {args.out}.")
+
         # ----------------------
         # Auto-filter and save Excel
         # ----------------------
         df = pd.DataFrame(rows)
 
-        # Convert date column to datetime
-        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+        # Convert date column to datetime (UTC)
+        df['date'] = pd.to_datetime(df['date'], errors='coerce', utc=True)
 
         # Filter by start date (after May 1, 2025)
-        start_date = datetime(2025, 5, 1)
+        start_date = pd.Timestamp('2025-05-01', tz='UTC')
         df = df[df['date'] >= start_date]
 
-        # Optional: further filter by keywords (extra safety)
+        # Keyword filter
         keywords = [
             'you have applied',
             'application received',
@@ -258,12 +260,17 @@ def main():
         df_filtered = df[df['subject'].str.contains(pattern, case=False, na=False) |
                         df['preview'].str.contains(pattern, case=False, na=False)]
 
-        # Save filtered Excel
+        # Make datetimes timezone-naive for Excel
+        df_filtered = df_filtered.copy()
+        df_filtered['date'] = df_filtered['date'].dt.tz_convert(None)
+
+        # Save to Excel
         excel_path = args.out.replace(".csv", "_filtered.xlsx")
         df_filtered.to_excel(excel_path, index=False)
         print(f"Saved {len(df_filtered)} filtered application emails to {excel_path}")
     else:
         print("No new rows to write.")
+
 
 if __name__ == "__main__":
     main()
