@@ -202,8 +202,8 @@ def load_existing_ids(path):
 def main():
     parser = argparse.ArgumentParser(description="Manual-run Gmail job applications tracker")
     parser.add_argument("--query", type=str,
-    default='subject:("you have applied" OR "application received" OR "thank you for applying" OR "we have received your application" OR "your application has been submitted" OR "application confirmation" OR "application acknowledgement") after:2025/05/01',
-    help="Gmail query (Gmail search language).")
+        default='subject:("you have applied" OR "your application has been received" OR "application received" OR "application acknowledged" OR "application confirmation" OR "application successfully submitted" OR "application submitted" OR "application under review" OR "application status update" OR "application update" OR "application completed" OR "submission received" OR "your submission is being reviewed" OR "thanks for applying" OR "thank you for applying" OR "we have received your application" OR "we confirm your application" OR "your application is complete" OR "application submission confirmed" OR "application submission acknowledged" OR "application processed" OR "your submission has been processed" OR "your application has been logged" OR "application recorded" OR "we received your application" OR "your application has been entered") after:2025/05/01 -from:linkedin.com -from:indeed.com -from:jobs@',
+        help="Gmail query (Gmail search language).")
     parser.add_argument("--max", type=int, default=500, help="Max messages to fetch")
     parser.add_argument("--out", type=str, default=DEFAULT_CSV, help="CSV output file")
     parser.add_argument("--append", action="store_true", help="Append to existing CSV and skip existing message_ids")
